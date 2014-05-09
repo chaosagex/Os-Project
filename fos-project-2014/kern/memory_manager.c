@@ -702,14 +702,19 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 	uint32* pgd=e->env_pgdir;
 	uint32* pt=NULL;
 	uint32 end=virtual_address+(size*PAGE_SIZE);
-	//cprintf("%x",end);
+	//cprintf("%x\n",end);
 	uint32 start;
 	uint32 va=virtual_address;
+	va=ROUNDDOWN(va,PAGE_SIZE*1024);
 	while(va<end)
 		{
 			get_page_table(pgd,(void*)va,&pt);
 			start=va;
 			va+=PAGE_SIZE*1024;
+			cprintf("%x\n",(uint32)pt);
+			cprintf("start=%x\n",start);
+			cprintf("end=%x\n",end);
+			cprintf("%d\n",size);
 			if(pt==NULL)
 				continue;
 			else
@@ -720,17 +725,17 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 					unmap_frame(pgd,(void*)start);
 					start+=PAGE_SIZE;
 				}
-				if(start%(PAGE_SIZE*1024)==0)
+				if(start==va||(pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)])
 				{
 					uint32 pa = K_PHYSICAL_ADDRESS(pt) ;
 					struct Frame_Info *ptr = to_frame_info(pa) ;
-					ptr->references = 0 ;
-					free_frame(ptr) ;
-					pgd[PDX(va)] = 0 ;
+					decrement_references(ptr);
+					//unmap_frame(pgd,pt);
 				}
-				//unmap_frame(pgd,pt);
+
 			}
 		}
+
 	lcr3(kern_phys_pgdir) ;
 	//This function should free ALL pages of the required size starting at virtual_address
 	//and then removes all page tables that are empty (i.e. not used) (no pages are mapped in the table)

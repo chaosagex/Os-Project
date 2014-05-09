@@ -118,6 +118,7 @@ void free(void* virtual_address)
 			break;
 	}
 	sys_freeMem((uint32)virtual_address,sz[cur]);
+	cprintf("%d\n",sz[cur]);
 	cprintf("%d\n",free2-sys_calculate_free_frames());
 	//get the size of the given allocation using its address
 	//you need to call sys_freeMem()
