@@ -702,7 +702,6 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 	uint32* pgd=e->env_pgdir;
 	uint32* pt=NULL;
 	uint32 end=virtual_address+(size*PAGE_SIZE);
-	//cprintf("%x\n",end);
 	uint32 start;
 	uint32 va=virtual_address;
 	va=ROUNDDOWN(va,PAGE_SIZE*1024);
@@ -711,10 +710,6 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 			get_page_table(pgd,(void*)va,&pt);
 			start=va;
 			va+=PAGE_SIZE*1024;
-			cprintf("%x\n",(uint32)pt);
-			cprintf("start=%x\n",start);
-			cprintf("end=%x\n",end);
-			cprintf("%d\n",size);
 			if(pt==NULL)
 				continue;
 			else
@@ -730,7 +725,6 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 					uint32 pa = K_PHYSICAL_ADDRESS(pt) ;
 					struct Frame_Info *ptr = to_frame_info(pa) ;
 					decrement_references(ptr);
-					//unmap_frame(pgd,pt);
 				}
 
 			}
