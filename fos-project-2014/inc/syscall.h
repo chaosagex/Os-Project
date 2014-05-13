@@ -39,6 +39,9 @@ enum
 	SYS_get_virtual_time,
 	SYS_rcr2,
 	SYS_bypassPageFault,
+	SYS_testNum,
+	SYS_rsttst,
+	SYS_chktst,
 	NSYSCALLS
 };
 

@@ -1,3 +1,4 @@
+
 /* See COPYRIGHT for copyright information. */
 
 #include <inc/x86.h>
@@ -97,6 +98,17 @@ DECLARE_START_OF(tst_sharing_2master);
 DECLARE_START_OF(tst_sharing_2slave1);
 DECLARE_START_OF(tst_sharing_2slave2);
 DECLARE_START_OF(tst_sharing_3);
+DECLARE_START_OF(mergesort_leakage);
+DECLARE_START_OF(mergesort_noleakage);
+DECLARE_START_OF(quicksort_noleakage);
+
+//2014 Final Tests
+DECLARE_START_OF(tst1);
+DECLARE_START_OF(tst2);
+DECLARE_START_OF(tst3);
+DECLARE_START_OF(tst4);
+DECLARE_START_OF(tst5);
+DECLARE_START_OF(tst6);
 
 //User Programs Table
 //The input for any PTR_START_OF macro must be the ".c" filename of the user program
@@ -133,6 +145,17 @@ struct UserProgramInfo userPrograms[] = {
 		{ "shr2Slave1", "[Slave program1] of tst_sharing_2master", PTR_START_OF(tst_sharing_2slave1)},
 		{ "shr2Slave2", "[Slave program2] of tst_sharing_2master", PTR_START_OF(tst_sharing_2slave2)},
 		{ "tshr3", "Tests the shared variables [Special cases of create]", PTR_START_OF(tst_sharing_3)},
+		{ "qs", "Quicksort with NO memory leakage", PTR_START_OF(quicksort_noleakage)},
+		{ "ms1", "Mergesort with NO memory leakage", PTR_START_OF(mergesort_noleakage)},
+		{ "ms2", "Mergesort that cause memory leakage", PTR_START_OF(mergesort_leakage)},
+
+		//Final Test Programs
+		{ "tst1", "", PTR_START_OF(tst1)},
+		{ "tst2", "", PTR_START_OF(tst2)},
+		{ "tst3", "", PTR_START_OF(tst3)},
+		{ "tst4", "", PTR_START_OF(tst4)},
+		{ "tst5", "", PTR_START_OF(tst5)},
+		{ "tst6", "", PTR_START_OF(tst6)},
 };
 
 ///=========================================================

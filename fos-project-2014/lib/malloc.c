@@ -34,7 +34,6 @@ void* malloc(uint32 size)
 
 	// Steps:
 	//	1) search for FIRST FIT space in heap that is suitable for the required allocation size
-	uint32 free=sys_calculate_free_frames() ;
 	size=ROUNDUP(size,PAGE_SIZE);
 	size/=PAGE_SIZE;
 	uint32 address=USER_HEAP_START;
@@ -50,7 +49,7 @@ void* malloc(uint32 size)
 			{
 				if(used[i]==0)
 				{
-					i++;
+					++i;
 					continue;
 				}
 				else
@@ -58,7 +57,6 @@ void* malloc(uint32 size)
 					count=0;
 					break;
 				}
-				i++;
 			}
 			if(size==count)
 			{
@@ -78,14 +76,6 @@ void* malloc(uint32 size)
 	sz[arr_count]=size;
 	arr_count++;
 	return (uint32*)address;
-	//	2) if no suitable space found, return NULL
-	//	 Else,
-	//	3) Call sys_allocateMem to invoke the Kernel for allocation
-	// 	4) Return pointer containing the virtual address of allocated space,
-	//
-
-	//This function should allocate ALL pages of the required range
-	// ******** ON 4KB ALIGNMENT *******************
 }
 
 
@@ -108,14 +98,12 @@ void free(void* virtual_address)
 	add/=PAGE_SIZE;
 	int i;
 	uint32 cur=used[add];
-	for(i=0;i<used[add];i++)
+	for(i=add;i<add+sz[cur];i++)
 	{
 		if(used[i]==cur)
 			{
-				used[add]=0;
+				used[i]=0;
 			}
-		else
-			break;
 	}
 	sys_freeMem((uint32)virtual_address,sz[cur]);
 	//get the size of the given allocation using its address

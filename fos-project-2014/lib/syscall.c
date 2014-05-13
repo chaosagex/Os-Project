@@ -237,3 +237,18 @@ void sys_bypassPageFault(uint8 instrLength)
 	syscall(SYS_bypassPageFault, instrLength, 0, 0, 0, 0);
 	return ;
 }
+void rsttst()
+{
+	syscall(SYS_rsttst, 0, 0, 0, 0, 0);
+	return ;
+}
+void tst(uint32 n, uint32 v1, uint32 v2, char c, int inv)
+{
+	syscall(SYS_testNum, n, v1, v2, c, inv);
+	return ;
+}
+void chktst(uint32 n)
+{
+	syscall(SYS_chktst, n, 0, 0, 0, 0);
+	return ;
+}

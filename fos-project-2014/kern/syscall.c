@@ -357,6 +357,54 @@ void sys_bypassPageFault(uint8 instrLength)
 	bypassInstrLength = instrLength;
 }
 
+int tstcnt;
+void rsttst()
+{
+	tstcnt = 0;
+}
+
+void tst(uint32 n, uint32 v1, uint32 v2, char c, int inv)
+{
+	int chk = 0;
+	switch (c)
+	{
+		case 'l':
+			if (n < v1)
+				chk = 1;
+			else if (inv)
+				chk = 1;
+			break;
+		case 'g':
+			if (n > v1)
+				chk = 1;
+			else if (inv)
+				chk = 1;
+			break;
+		case 'e':
+			if (n == v1)
+				chk = 1;
+			else if (inv)
+				chk = 1;
+			break;
+		case 'b':
+			if (n >= v1 && n <= v1)
+				chk = 1;
+			break;
+	}
+
+	if (chk == 0) panic("Error!! test fails");
+	tstcnt++ ;
+	return;
+}
+
+void chktst(uint32 n)
+{
+	if (tstcnt == n)
+		cprintf("\nCongratulations... test runs successfully\n");
+	else
+		panic("Error!! test fails at final");
+}
+
 
 // Dispatches to the correct kernel function, passing the arguments.
 uint32 syscall(uint32 syscallno, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5)
@@ -512,6 +560,16 @@ uint32 syscall(uint32 syscallno, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uin
 		break;
 	case SYS_bypassPageFault:
 		sys_bypassPageFault(a1);
+		return 0;
+
+	case SYS_rsttst:
+		rsttst();
+		return 0;
+	case SYS_chktst:
+		chktst(a1);
+		return 0;
+	case SYS_testNum:
+		tst(a1, a2, a3, (char)a4, a5);
 		return 0;
 
 	case NSYSCALLS:

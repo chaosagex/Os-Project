@@ -686,6 +686,7 @@ void allocateMem(struct Env* e, uint32 virtual_address, uint32 size)
 		virtual_address+=PAGE_SIZE;
 	}
 	lcr3(kern_phys_pgdir) ;
+	tlbflush();
 	//This function should allocate ALL pages of the required size starting at virtual_address in the given environment
 }
 
@@ -704,13 +705,30 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 	uint32 end=virtual_address+(size*PAGE_SIZE);
 	uint32 start;
 	uint32 va=virtual_address;
-	va=ROUNDDOWN(va,PAGE_SIZE*1024);
+	bool middle=0;
+	bool exist=0;
 	while(va<end)
 		{
-			get_page_table(pgd,(void*)va,&pt);
 			start=va;
+			get_page_table(pgd,(void*)start,&pt);
+			va=ROUNDDOWN(va,PAGE_SIZE*1024);
+			if(start>va)
+			{
+				uint32 temp=va;
+				for(;temp<start;temp+=PAGE_SIZE)
+					{
+						if((pt[PTX(temp)]|PERM_PRESENT)!=pt[PTX(temp)])
+							continue;
+						else
+						{
+							middle=1;
+							break;
+						}
+					}
+
+			}
 			va+=PAGE_SIZE*1024;
-			if(pt==NULL)
+			if(pt==NULL||((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)]))
 				continue;
 			else
 			{
@@ -720,7 +738,20 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 					unmap_frame(pgd,(void*)start);
 					start+=PAGE_SIZE;
 				}
-				if(start==va||(pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)])
+				if(start<va)
+				{
+					for(;start<va;start+=PAGE_SIZE)
+					{
+						if((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)])
+							continue;
+						else
+						{
+							exist=1;
+							break;
+						}
+					}
+				}
+				 if((start==va|| exist==0)&& middle==0)
 				{
 					uint32 pa = K_PHYSICAL_ADDRESS(pt) ;
 					struct Frame_Info *ptr = to_frame_info(pa) ;
@@ -731,6 +762,7 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 		}
 
 	lcr3(kern_phys_pgdir) ;
+	tlbflush();
 	//This function should free ALL pages of the required size starting at virtual_address
 	//and then removes all page tables that are empty (i.e. not used) (no pages are mapped in the table)
 
