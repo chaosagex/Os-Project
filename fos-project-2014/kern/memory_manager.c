@@ -711,6 +711,8 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 		{
 			start=va;
 			get_page_table(pgd,(void*)start,&pt);
+			if(pt==NULL||((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)]))
+							continue;
 			va=ROUNDDOWN(va,PAGE_SIZE*1024);
 			if(start>va)
 			{
@@ -728,38 +730,34 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 
 			}
 			va+=PAGE_SIZE*1024;
-			if(pt==NULL||((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)]))
-				continue;
-			else
+			while(start<va&&start<end)
 			{
-
-				while(start<va&&start<end)
+				unmap_frame(pgd,(void*)start);
+				start+=PAGE_SIZE;
+			}
+			if(start<va)
+			{
+				for(;start<va;start+=PAGE_SIZE)
 				{
-					unmap_frame(pgd,(void*)start);
-					start+=PAGE_SIZE;
-				}
-				if(start<va)
-				{
-					for(;start<va;start+=PAGE_SIZE)
+					if((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)])
+						continue;
+					else
 					{
-						if((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)])
-							continue;
-						else
-						{
-							exist=1;
-							break;
-						}
+						exist=1;
+						break;
 					}
 				}
-				 if((start==va|| exist==0)&& middle==0)
-				{
-					uint32 pa = K_PHYSICAL_ADDRESS(pt) ;
-					struct Frame_Info *ptr = to_frame_info(pa) ;
-					decrement_references(ptr);
-				}
-
 			}
+			 if((start==va|| exist==0)&& middle==0)
+			{
+				uint32 pa = K_PHYSICAL_ADDRESS(pt) ;
+				struct Frame_Info *ptr = to_frame_info(pa) ;
+				decrement_references(ptr);
+				pgd[PDX(va-1)] = 0 ;
+			}
+
 		}
+
 
 	lcr3(kern_phys_pgdir) ;
 	tlbflush();

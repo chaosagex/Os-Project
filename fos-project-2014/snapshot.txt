@@ -1,0 +1,25 @@
+$Revision: 1.166 $ $Date: 2006/08/11 17:34:12 $
+Options: apmbios pcibios eltorito
+
+ata0 master: Generic 1234 ATA-3 Hard-Disk (30 MBytes)
+
+Booting from Hard Disk...
+
+
+
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          !!                                                             !!
+          !!                   !! FCIS says HELLO !!                     !!
+          !!                                                             !!
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+Physical memory: 32768K available, base = 640K, extended = 31744K
+Max Envs = 84
+check_boot_pgdir() succeeded!
+
+Welcome to the FOS kernel command prompt!
+Type 'help' for a list of commands.
+FOS>  qs

@@ -24,7 +24,6 @@
 //		"memory_manager.c", then switch back to the user mode here
 //	the allocateMem function is empty, make sure to implement it.
 uint32 used[HeapSize];
-uint32 sz[HeapSize];
 int arr_count=1;
 void* malloc(uint32 size)
 {	
@@ -73,7 +72,6 @@ void* malloc(uint32 size)
 	start*=PAGE_SIZE;
 	address+=start;
 	sys_allocateMem(address,size);
-	sz[arr_count]=size;
 	arr_count++;
 	return (uint32*)address;
 }
@@ -96,16 +94,21 @@ void free(void* virtual_address)
 	//panic("free() is not implemented yet...!!");
 	uint32 add=(uint32)virtual_address-USER_HEAP_START;
 	add/=PAGE_SIZE;
-	int i;
+	int i=add;
+	uint32 size=0;
 	uint32 cur=used[add];
-	for(i=add;i<add+sz[cur];i++)
+	while(1==1)
 	{
 		if(used[i]==cur)
 			{
 				used[i]=0;
+				i++;
+				size++;
 			}
+		else
+			break;
 	}
-	sys_freeMem((uint32)virtual_address,sz[cur]);
+	sys_freeMem((uint32)virtual_address,size);
 	//get the size of the given allocation using its address
 	//you need to call sys_freeMem()
 
