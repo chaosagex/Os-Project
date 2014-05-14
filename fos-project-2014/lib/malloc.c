@@ -1,6 +1,6 @@
 	
 #include <inc/lib.h>
-#define HeapSize 262144
+#define HeapSize 131072
 /*
  * Simple malloc()
  *
@@ -26,7 +26,7 @@
 uint32 used[HeapSize];
 int arr_count=1;
 void* malloc(uint32 size)
-{	
+{
 	//TODO: [PROJECT 2014 - Heap] malloc()
 	// your code is here, remove the panic and write your code
 	//panic("malloc() is not implemented yet...!!");
@@ -46,7 +46,7 @@ void* malloc(uint32 size)
 			start=i;
 			for(;count<size;count++)
 			{
-				if(used[i]==0)
+				if(used[i]==0&&i<HeapSize)
 				{
 					++i;
 					continue;
@@ -68,7 +68,9 @@ void* malloc(uint32 size)
 		}
 	}
 	if(count<size)
+	{
 		return NULL;
+	}
 	start*=PAGE_SIZE;
 	address+=start;
 	sys_allocateMem(address,size);
