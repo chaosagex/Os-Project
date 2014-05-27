@@ -1,6 +1,6 @@
 	
 #include <inc/lib.h>
-#define HeapSize 131072
+#define HeapSize (USER_HEAP_MAX-USER_HEAP_START)/PAGE_SIZE
 /*
  * Simple malloc()
  *
