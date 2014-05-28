@@ -49,6 +49,7 @@ uint32 	sys_calculate_notmod_frames();
 
 void 	sys_freeMem(uint32 virtual_address, uint32 size);
 void	sys_allocateMem(uint32 virtual_address, uint32 size);
+void 	sys_moveMem(uint32 src_virtual_address, uint32 dst_virtual_address, uint32 size);
 int 	sys_pf_calculate_allocated_pages(void);
 void 	sys_disable_interrupt();
 void 	sys_enable_interrupt();

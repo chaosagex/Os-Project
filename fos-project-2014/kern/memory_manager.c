@@ -370,8 +370,35 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 	if (*ptr_frame_info == NULL)
 	{
 		//TODO: [PROJECT 2014 - BONUS2] Free RAM by removing Exited/Loaded processes
-		panic("ERROR: Kernel run out of memory... allocate_frame cannot find a free frame.\n");
-
+		//panic("ERROR: Kernel run out of memory... allocate_frame cannot find a free frame.\n");
+//		struct Env *e=NULL;
+//		bool freed=0;
+//		e=sched_next;
+//		while(e!=NULL)
+//		{
+//			if(e->env_status == ENV_EXIT)
+//			{
+//				sched_remove_ready(e);
+//				env_free(e);
+//				freed=1;
+//				break;
+//			}
+//			e=sched_next_circular(e);
+//		}
+//		if(freed!=1)
+//		{
+//			e=sched_next;
+//			while(e!=NULL)
+//			{
+//				if(e->env_status == ENV_NEW)
+//				{
+//					sched_remove_new(e);
+//					env_free(e);
+//					break;
+//				}
+//				e=sched_next_circular(e);
+//			}
+//		}
 		// When allocating new frame, if there's no free frame, then you should:
 		//	1. Remove one or more of the exited processes, if any, from the main memory (those with status ENV_EXIT)
 		//	2. If not, remove one or more of the loaded processes, (those with status ENV_NEW)
@@ -668,7 +695,6 @@ int loadtime_map_frame(uint32 *ptr_page_directory, struct Frame_Info *ptr_frame_
 
 void allocateMem(struct Env* e, uint32 virtual_address, uint32 size)
 {
-	//TODO: [PROJECT 2014 - Heap] allocateMem()
 	// your code is here, remove the panic and write your code
 	//panic("allocateMem() is not implemented yet...!!");
 	int32 kern_phys_pgdir = rcr3() ;
@@ -695,7 +721,6 @@ void allocateMem(struct Env* e, uint32 virtual_address, uint32 size)
 
 void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 {
-	//TODO: [PROJECT 2014 - Heap] freeMem()
 	// your code is here, remove the panic and write your code
 	//panic("freeMem() is not implemented yet...!!");
 	int32 kern_phys_pgdir = rcr3() ;
@@ -705,14 +730,17 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 	uint32 end=virtual_address+(size*PAGE_SIZE);
 	uint32 start;
 	uint32 va=virtual_address;
-	bool middle=0;
-	bool exist=0;
 	while(va<end)
 		{
+		bool middle=0;
+		bool exist=0;
 			start=va;
 			get_page_table(pgd,(void*)start,&pt);
-			if(pt==NULL||((pt[PTX(start)]|PERM_PRESENT)!=pt[PTX(start)]))
-							continue;
+			if(pt==NULL)
+			{
+				va+=PAGE_SIZE*1024;
+				continue;
+			}
 			va=ROUNDDOWN(va,PAGE_SIZE*1024);
 			if(start>va)
 			{
@@ -774,8 +802,24 @@ void moveMem(struct Env* e, uint32 src_virtual_address, uint32 dst_virtual_addre
 {
 	//TODO: [PROJECT 2014 - BONUS1] moveMem()
 	// your code is here, remove the panic and write your code
-	panic("moveMem() is not implemented yet...!!");
-
+	//panic("moveMem() is not implemented yet...!!");
+	int32 kern_phys_pgdir = rcr3() ;
+	lcr3(e->env_cr3) ;
+	int i=0;
+	uint32* pgd=e->env_pgdir;
+	uint32* pt;
+	uint32 va=src_virtual_address;
+	struct Frame_Info * frame;
+	for(;i<size;i++)
+	{
+		frame=get_frame_info(pgd,(void*)src_virtual_address,&pt);
+		if(frame!=NULL)
+			map_frame(pgd,frame,(void*)dst_virtual_address,PERM_WRITEABLE|PERM_USER);
+		src_virtual_address+=PAGE_SIZE;
+		dst_virtual_address+=PAGE_SIZE;
+	}
+	lcr3(kern_phys_pgdir) ;
+	freeMem(e,va,size);
 	// This function should move all pages from "src_virtual_address" to "dst_virtual_address"
 	// with the given size
 	// After finished, the src_virtual_address must no longer be accessed

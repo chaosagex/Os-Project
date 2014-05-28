@@ -3,5 +3,5 @@
 
 void *malloc(uint32 size);
 void free(void* virtual_address);
-
+void *realloc(void *, uint32);
 #endif

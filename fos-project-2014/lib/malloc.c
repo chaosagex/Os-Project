@@ -25,9 +25,72 @@
 //	the allocateMem function is empty, make sure to implement it.
 uint32 used[HeapSize];
 int arr_count=1;
+int begining(int index,uint32 size)
+{
+	int i=index;
+	int count=0;
+	int start;
+	if(index==0)
+	{
+		for(;i<HeapSize;i++)
+		{
+			if(used[i]==0)
+			{
+				start=i;
+				for(;count<size;count++)
+				{
+					if(used[i]==0&&i<HeapSize)
+					{
+						++i;
+						continue;
+					}
+					else
+					{
+						count=0;
+						break;
+					}
+				}
+				if(count==size)
+					{
+						return start;
+					}
+
+			}
+		}
+		if(count<size)
+		{
+			return -1;
+		}
+
+	}
+	else
+	{
+		for(;i<HeapSize;i++)
+		{
+			if(used[i]==0)
+			{
+				for(;count<size;count++)
+				{
+					if(used[i]==0&&i<HeapSize)
+					{
+						++i;
+						continue;
+					}
+					else
+					{
+						return -1;
+					}
+				}
+				return 1;
+			}
+			return -1;
+		}
+		return -1;
+	}
+return -1;
+}
 void* malloc(uint32 size)
 {
-	//TODO: [PROJECT 2014 - Heap] malloc()
 	// your code is here, remove the panic and write your code
 	//panic("malloc() is not implemented yet...!!");
 
@@ -36,41 +99,12 @@ void* malloc(uint32 size)
 	size=ROUNDUP(size,PAGE_SIZE);
 	size/=PAGE_SIZE;
 	uint32 address=USER_HEAP_START;
-	int i=0;
-	int count=0;
-	int start;
-	for(;i<HeapSize;i++)
-	{
-		if(used[i]==0)
-		{
-			start=i;
-			for(;count<size;count++)
-			{
-				if(used[i]==0&&i<HeapSize)
-				{
-					++i;
-					continue;
-				}
-				else
-				{
-					count=0;
-					break;
-				}
-			}
-			if(size==count)
-			{
-				int k;
-				for(k=0;k<count;k++)
-					used[k+start]=arr_count;
-				break;
-			}
-
-		}
-	}
-	if(count<size)
-	{
+	int start=begining(0,size);
+	if(start==-1)
 		return NULL;
-	}
+	int k;
+	for(k=0;k<size;k++)
+		used[k+start]=arr_count;
 	start*=PAGE_SIZE;
 	address+=start;
 	sys_allocateMem(address,size);
@@ -90,8 +124,6 @@ void* malloc(uint32 size)
 //	the freeMem function is empty, make sure to implement it.
 void free(void* virtual_address)
 {
-	uint32 free2=sys_calculate_free_frames() ;
-	//TODO: [PROJECT 2014 - Heap] free()
 	// your code is here, remove the panic and write your code
 	//panic("free() is not implemented yet...!!");
 	uint32 add=(uint32)virtual_address-USER_HEAP_START;
@@ -138,7 +170,64 @@ void *realloc(void *virtual_address, uint32 new_size)
 {
 	//TODO: [PROJECT 2014 - BONUS1] realloc()
 	// your code is here, remove the panic and write your code
-	panic("realloc() is not implemented yet...!!");
+	//panic("realloc() is not implemented yet...!!");
+	if(virtual_address==NULL)
+		return malloc(new_size);
+	else
+	{
+		uint32 add=(uint32)virtual_address-USER_HEAP_START;
+		add/=PAGE_SIZE;
+		int i=add;
+		uint32 size=0;
+		uint32 orgSize=new_size;
+		new_size=ROUNDUP(new_size,PAGE_SIZE);
+		new_size/=PAGE_SIZE;
+		uint32 va=(uint32)virtual_address;
+		uint32 cur=used[add];
+		while(1==1)
+		{
+			if(used[i]==cur)
+				{
+					i++;
+					size++;
+				}
+			else
+				break;
+		}
+		if(new_size==0)
+		{
+			free(virtual_address);
+			return NULL;
+		}
+		else
+		{
+			int remainder=new_size-size;
+			int flag=begining(i,remainder);
 
+			if(flag==1)
+			{
+				sys_allocateMem(va+(size*PAGE_SIZE),remainder);
+				int k;
+				for(k=i;k<i+remainder;k++)
+					used[k]=cur;
+				return virtual_address;
+			}
+			else
+			{
+				void* dest=malloc(orgSize);
+				if(dest==NULL)
+					return virtual_address;
+				int k;
+				for(k=add;k<add+size;k++)
+				{
+					if(used[k]==cur)
+						used[k]=0;
+				}
+				sys_moveMem((uint32)virtual_address,(uint32)dest,size);
+				return dest;
+			}
+		}
+	}
+	return NULL;
 }
 
