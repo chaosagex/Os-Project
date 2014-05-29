@@ -92,9 +92,11 @@ int createSharedObject(char* shareName, uint32 size, uint8 isWritable, void** re
 
 int getSharedObject(char* shareName, void** returned_shared_address)
 {
-	//TODO: [PROJECT 2014 - Shared] getSharedObject()
-	// your code is here, remove the panic and write your code
-	//panic("getSharedObject() is not implemented yet...!!");
+	// This function should share the required object in SHARED area of the current environment (with the specified permissions: read_only/writable)
+	// and return the start address of it by setting the "*returned_shared_address"
+	// RETURN:
+	//	a) 0 if success
+	//	b) E_SHARED_MEM_NOT_EXISTS if the shared object is not exists
 	int index=getShareNumber(shareName);
 	if(index==-1)
 		return E_SHARED_MEM_NOT_EXISTS;
@@ -118,22 +120,7 @@ int getSharedObject(char* shareName, void** returned_shared_address)
 		add+=PAGE_SIZE;
 	}
 	myenv->shared_free_address=add;
-	// This function should share the required object in SHARED area of the current environment (with the specified permissions: read_only/writable)
-	// and return the start address of it by setting the "*returned_shared_address"
-	// RETURN:
-	//	a) 0 if success
-	//	b) E_SHARED_MEM_NOT_EXISTS if the shared object is not exists
-
-
-	// Steps:
-	//	1) Get the shared object from the "shares" array
-	//	2) Get its physical frames from the frames_storage
-	//		(use: get_frame_from_storage())
-	//	3) Share these frames with the current environment "curenv" starting from its "shared_free_address"
-	//  4) make sure that read-only object must be shared "read only", use the flag isWritable to make it either read-only or writable
-	//	5) Update the "shared_free_address" of the current environment to be aligned on a PAGE boundary
-	//	6) Update references
-	// 	7) Return the start address of the shared object by setting the "*returned_shared_address"
+	shares[index].references++;
 	lcr3(kern_phys_pgdir) ;
 	return 0;
 }
@@ -145,9 +132,53 @@ int freeSharedObject(char* shareName)
 {
 	//TODO: [PROJECT 2014 - BONUS3] freeSharedObject()
 	// your code is here, remove the panic and write your code
-	panic("freeSharedObject() is not implemented yet...!!");
+	//panic("freeSharedObject() is not implemented yet...!!");
 	struct Env* myenv = curenv; //The calling environment
-
+	int32 kern_phys_pgdir = rcr3() ;
+	lcr3(myenv->env_cr3) ;
+	int index=getShareNumber(shareName);
+	if(index==-1)
+		return E_SHARED_MEM_NOT_EXISTS;
+	struct Frame_Info* frame=NULL;
+	struct Frame_Info* frame2=NULL;
+	uint32* pgd=myenv->env_pgdir;
+	int size=shares[index].size;
+	//cprintf("size=%d\n",size);
+	//cprintf("add=%x\n",myenv->shared_free_address);
+	uint32 va=myenv->shared_free_address-(size*PAGE_SIZE);
+	uint32* pt=NULL;
+	frame=get_frame_from_storage(shares[index].framesStorage,0);
+	frame2=get_frame_info(pgd,(void*)va,&pt);
+	if(frame==frame2&&frame!=NULL)
+		freeMem(myenv,va,size);
+	else
+	{
+		while(va>USER_SHARED_MEM_START)
+		{
+			frame2=get_frame_info(pgd,(void*)va,&pt);
+			if(frame==frame2&&frame!=NULL)
+			{
+				freeMem(myenv,va,size);
+				break;
+			}
+			va-=PAGE_SIZE;
+		}
+	}
+	shares[index].references--;
+	if(shares[index].references==0)
+	{
+		clear_frames_storage(shares[index].framesStorage);
+		shares[index].isWritable=0;
+		int len=strlen(shares[index].name);
+		int k;
+		for(k=0;k<len;k++)
+			shares[index].name[k]=0;
+		shares[index].size=0;
+		struct Share s;
+	}
+	tlbflush();
+	lcr3(kern_phys_pgdir);
+	return 0;
 	// This function should free (delete) the shared object from the SHARED area of the current environment
 	// If this is the last shared env, then the "frames_store" should be cleared and the shared object should be deleted
 	// RETURN:

@@ -371,34 +371,37 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 	{
 		//TODO: [PROJECT 2014 - BONUS2] Free RAM by removing Exited/Loaded processes
 		//panic("ERROR: Kernel run out of memory... allocate_frame cannot find a free frame.\n");
-//		struct Env *e=NULL;
-//		bool freed=0;
-//		e=sched_next;
-//		while(e!=NULL)
-//		{
-//			if(e->env_status == ENV_EXIT)
-//			{
-//				sched_remove_ready(e);
-//				env_free(e);
-//				freed=1;
-//				break;
-//			}
-//			e=sched_next_circular(e);
-//		}
-//		if(freed!=1)
-//		{
-//			e=sched_next;
-//			while(e!=NULL)
-//			{
-//				if(e->env_status == ENV_NEW)
-//				{
-//					sched_remove_new(e);
-//					env_free(e);
-//					break;
-//				}
-//				e=sched_next_circular(e);
-//			}
-//		}
+		struct Env e;
+		bool freed=0;
+		bool removed=0;
+		int i;
+		int maxenvs=NENV;
+		for(i=0;i<maxenvs;i++)
+		{
+			e=envs[i];
+			if(e.env_status == ENV_EXIT)
+			{
+				env_free(&e);
+				freed=1;
+				removed=1;
+				break;
+			}
+		}
+		if(freed!=1)
+		{
+			for(i=0;i<maxenvs;i++)
+			{
+				e=envs[i];
+				if(e.env_status == ENV_NEW)
+				{
+					env_free(&e);
+					removed=1;
+					break;
+				}
+			}
+		}
+		if (removed==0)
+			panic("ERROR: Kernel run out of memory... allocate_frame cannot find a free frame.\n");
 		// When allocating new frame, if there's no free frame, then you should:
 		//	1. Remove one or more of the exited processes, if any, from the main memory (those with status ENV_EXIT)
 		//	2. If not, remove one or more of the loaded processes, (those with status ENV_NEW)
@@ -800,7 +803,6 @@ void freeMem(struct Env* e, uint32 virtual_address, uint32 size)
 
 void moveMem(struct Env* e, uint32 src_virtual_address, uint32 dst_virtual_address, uint32 size)
 {
-	//TODO: [PROJECT 2014 - BONUS1] moveMem()
 	// your code is here, remove the panic and write your code
 	//panic("moveMem() is not implemented yet...!!");
 	int32 kern_phys_pgdir = rcr3() ;

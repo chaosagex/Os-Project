@@ -168,7 +168,6 @@ void free(void* virtual_address)
 
 void *realloc(void *virtual_address, uint32 new_size)
 {
-	//TODO: [PROJECT 2014 - BONUS1] realloc()
 	// your code is here, remove the panic and write your code
 	//panic("realloc() is not implemented yet...!!");
 	if(virtual_address==NULL)
