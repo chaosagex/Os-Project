@@ -1,25 +1,25 @@
-[tshr5slave 4097] Slave env removed x
-[tshr5slave 4097] DIff = 1
-[tshr5 4096] Master env removed x (1 page)
-[tshr5 4096] Step A completed successfully!!
 
 
-[tshr5 4096] STEP B: checking free of 2 shared objects ...
-[tshr5 4096] Master env created z (1 page)
-[tshr5 4096] Master env created x (1 page)
-[tshr5slaveB1 4099] Slave B1 env used x (getSharedObject)
-[tshr5slaveB1 4099] Slave B1 please be patient ...
-[tshr5slaveB2 4100] Slave B2 env used z (getSharedObject)
-[tshr5slaveB2 4100] Slave B2 please be patient ...
-[tshr5 4096] Master env removed z
-[tshr5 4096] Master env removed x
-[tshr5slaveB1 4099] Slave B1 env removed x
-[tshr5slaveB2 4100] Slave B2 env removed z
-[tshr5slaveB2 4100] Step B completed successfully!!
+Physical memory: 32768K available, base = 640K, extended = 31744K
+Max Envs = 84
+check_boot_pgdir() succeeded!
 
+Welcome to the FOS kernel command prompt!
+Type 'help' for a list of commands.
+FOS> run tst1
 
-[tshr5slaveB2 4100] Congratulations!! Test of freeSharedObjects [5] completed su
-ccessfully!!
+Environment Id= 4096
 
+Congratulations... test runs successfully
+FOS> run tst5
 
+Environment Id= 4097
+
+Congratulations... test runs successfully
+FOS> run tst2
+
+Environment Id= 4098
+84
+illegal memory access at address = 0
+kernel panic at kern/trap.c:456: ILLEGAL MEMORY ACCESS!!!
 FOS>

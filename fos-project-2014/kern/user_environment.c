@@ -587,42 +587,17 @@ void env_free(struct Env *e)
 {
 	//panic("env_free is not implemented...");
 	uint32 oldDir = rcr3();
-	lcr3((uint32) K_PHYSICAL_ADDRESS( e->env_pgdir));
-	uint32 va=0;
-	uint32 start;
-	uint32* pt=NULL;
+	lcr3(e->env_cr3);
 	uint32* pgdir=e->env_pgdir;
-	struct Frame_Info* frame=NULL;
-	while(va<USER_TOP)
-	{
-		frame=get_frame_info(pgdir,(uint32*)va,&pt);
-		start=va;
-		va+=PAGE_SIZE*1024;
-		if(pt==NULL)
-			continue;
-		else
-		{
-			while(start<va)
-			{
-				unmap_frame(pgdir,(void*)start);
-				start+=PAGE_SIZE;
-			}
-			uint32 pa = K_PHYSICAL_ADDRESS(pt) ;
-			struct Frame_Info *ptr = to_frame_info(pa) ;
-			ptr->references = 0 ;
-			free_frame(ptr) ;
-			ptr_page_directory[PDX(va)] = 0 ;
-			//unmap_frame(pgdir,pt);
-		}
-	}
+	freeMem(e,0,USER_TOP/PAGE_SIZE);
 	uint32 pa = K_PHYSICAL_ADDRESS(pgdir) ;
 	struct Frame_Info *ptr = to_frame_info(pa) ;
-	ptr->references = 0 ;
-	free_frame(ptr) ;
-	//unmap_frame(pgdir,pgdir);
-	tlbflush();
+	decrement_references(ptr);
+//	ptr->references = 0 ;
+//	free_frame(ptr) ;
 	lcr3(oldDir);
 	free_environment(e);
+	tlbflush();
 }
 
 ///*****************************************************************************************

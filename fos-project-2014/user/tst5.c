@@ -54,7 +54,7 @@ void _main(void)
 		ptr_allocations[6] = malloc(3*Mega-kilo);
 		tst((uint32) ptr_allocations[6], USER_HEAP_START + 8*Mega,USER_HEAP_START + 8*Mega + PAGE_SIZE, 'b', 0);
 		tst((freeFrames - sys_calculate_free_frames()) , 768+1 ,0, 'e', 0);
-
+		//here
 		//Allocate 3 MB
 		freeFrames = sys_calculate_free_frames() ;
 		ptr_allocations[7] = malloc(3*Mega-kilo);

@@ -61,7 +61,7 @@ struct Command commands[] =
 		{ "wm", "writes one byte to specific location" ,command_writemem_k},
 		{ "rm", "reads one byte from specific location" ,command_readmem_k},
 		{ "rub", "reads block of bytes from specific location in given environment" ,command_readuserblock},
-		//{ "kill", "", command_kill_program},
+		{ "kill", "", command_kill_program},
 		{ "rut", "", command_remove_table},
 		{ "aup", "", command_allocuserpage},
 		{ "meminfo", "", command_meminfo},
@@ -536,10 +536,8 @@ int command_kill_program(int number_of_arguments, char **arguments)
 	int32 envId = strtol(arguments[1],NULL, 10);
 	struct Env* env = NULL;
 	envid2env(envId, &env, 0 );
-
 	if(env == NULL) return 0;
 	env_free(env);
-
 	return 0;
 }
 

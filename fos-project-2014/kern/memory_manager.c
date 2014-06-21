@@ -371,17 +371,19 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 	{
 		//TODO: [PROJECT 2014 - BONUS2] Free RAM by removing Exited/Loaded processes
 		//panic("ERROR: Kernel run out of memory... allocate_frame cannot find a free frame.\n");
-		struct Env e;
+		struct Env* e;
 		bool freed=0;
 		bool removed=0;
 		int i;
 		int maxenvs=NENV;
 		for(i=0;i<maxenvs;i++)
 		{
-			e=envs[i];
-			if(e.env_status == ENV_EXIT)
+			e=&envs[i];
+			if(e->env_status==ENV_BLOCKED)
+				continue;
+			if(e->env_status == ENV_EXIT)
 			{
-				env_free(&e);
+				env_free(e);
 				freed=1;
 				removed=1;
 				break;
@@ -391,10 +393,12 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 		{
 			for(i=0;i<maxenvs;i++)
 			{
-				e=envs[i];
-				if(e.env_status == ENV_NEW)
+				e=&envs[i];
+				if(e==NULL)
+					continue;
+				if(e->env_status == ENV_NEW)
 				{
-					env_free(&e);
+					env_free(e);
 					removed=1;
 					break;
 				}
@@ -405,9 +409,7 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 		// When allocating new frame, if there's no free frame, then you should:
 		//	1. Remove one or more of the exited processes, if any, from the main memory (those with status ENV_EXIT)
 		//	2. If not, remove one or more of the loaded processes, (those with status ENV_NEW)
-
 	}
-
 	LIST_REMOVE(&free_frame_list,*ptr_frame_info);
 
 	/******************* PAGE BUFFERING CODE *******************
