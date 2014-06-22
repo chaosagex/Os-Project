@@ -1,25 +1,25 @@
-line 5
-line 1
-line 2
-line 3
-line 4
-line 5
-line 1
-line 2
-line 3
-line 4
-line 5
-line 1
-line 2
-line 3
-line 4
-line 5
-line 1
-line 2
-line 3
-line 4
-line 5
-line 1
-illegal memory access at address = 0
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+Physical memory: 32768K available, base = 640K, extended = 31744K
+Max Envs = 84
+check_boot_pgdir() succeeded!
+
+Welcome to the FOS kernel command prompt!
+Type 'help' for a list of commands.
+FOS> run tshr2
+
+Environment Id= 4096
+[tshr2 4096] Congratulations!! Test of Shared Variables [Create & Get] [2] compl
+eted successfully!!
+
+
+[tshr2 4096] Now, ILLEGAL MEM ACCESS should be occur, due to attempting to write
+ a ReadOnly variable
+
+
+illegal memory access at address = a0001000
 kernel panic at kern/trap.c:456: ILLEGAL MEMORY ACCESS!!!
 FOS>

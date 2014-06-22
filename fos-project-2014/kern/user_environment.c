@@ -111,6 +111,7 @@ DECLARE_START_OF(tst5);
 DECLARE_START_OF(tst6);
 DECLARE_START_OF(tst_realloc_1);
 DECLARE_START_OF(tst_realloc_2);
+DECLARE_START_OF(tst_freeRAM_1);
 
 //User Programs Table
 //The input for any PTR_START_OF macro must be the ".c" filename of the user program
@@ -160,6 +161,7 @@ struct UserProgramInfo userPrograms[] = {
 		{ "tst6", "", PTR_START_OF(tst6)},
 		{ "ra1", "", PTR_START_OF(tst_realloc_1)},
 		{ "ra2", "", PTR_START_OF(tst_realloc_2)},
+		{ "fr", "", PTR_START_OF(tst_freeRAM_1)},
 };
 
 ///=========================================================
