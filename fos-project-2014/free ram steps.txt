@@ -1,0 +1,8 @@
+Steps:
+1. Add the user program "tst_freeRAM_1.c" to your project
+2. Add it to the array of user program info
+3. Apply the following scenario
+	FOS> load fib
+	FOS> load fact
+	
+	
