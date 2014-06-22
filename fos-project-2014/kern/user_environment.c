@@ -589,7 +589,7 @@ void env_free(struct Env *e)
 	uint32 oldDir = rcr3();
 	lcr3(e->env_cr3);
 	uint32* pgdir=e->env_pgdir;
-	freeMem(e,0,USER_TOP/PAGE_SIZE);
+	freeMem(e,0,(USER_LIMIT-1)/PAGE_SIZE);
 	uint32 pa = K_PHYSICAL_ADDRESS(pgdir) ;
 	struct Frame_Info *ptr = to_frame_info(pa) ;
 	decrement_references(ptr);

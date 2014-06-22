@@ -10,7 +10,7 @@ _main(void)
 
 	cprintf("Slave B1 please be patient ...\n");
 
-	env_sleep(3000);
+	env_sleep(4000);
 	int freeFrames = sys_calculate_free_frames() ;
 
 	sys_freeSharedObject("x");

@@ -366,6 +366,7 @@ void initialize_frame_info(struct Frame_Info *ptr_frame_info)
 // Hint: references should not be incremented
 int allocate_frame(struct Frame_Info **ptr_frame_info)
 {
+	//cprintf("Start of alloc_frame\n")
 	*ptr_frame_info = LIST_FIRST(&free_frame_list);
 	if (*ptr_frame_info == NULL)
 	{
@@ -379,10 +380,12 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 		for(i=0;i<maxenvs;i++)
 		{
 			e=&envs[i];
-			if(e->env_status==ENV_BLOCKED)
+
+			if(e->env_status==ENV_FREE)
 				continue;
 			if(e->env_status == ENV_EXIT)
 			{
+				cprintf("freed\n");
 				env_free(e);
 				freed=1;
 				removed=1;
@@ -394,7 +397,7 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 			for(i=0;i<maxenvs;i++)
 			{
 				e=&envs[i];
-				if(e==NULL)
+				if(e->env_status==ENV_FREE)
 					continue;
 				if(e->env_status == ENV_NEW)
 				{
@@ -406,10 +409,15 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 		}
 		if (removed==0)
 			panic("ERROR: Kernel run out of memory... allocate_frame cannot find a free frame.\n");
+		else
+		{
+			*ptr_frame_info = LIST_FIRST(&free_frame_list);
+		}
 		// When allocating new frame, if there's no free frame, then you should:
 		//	1. Remove one or more of the exited processes, if any, from the main memory (those with status ENV_EXIT)
 		//	2. If not, remove one or more of the loaded processes, (those with status ENV_NEW)
 	}
+
 	LIST_REMOVE(&free_frame_list,*ptr_frame_info);
 
 	/******************* PAGE BUFFERING CODE *******************
@@ -701,7 +709,6 @@ int loadtime_map_frame(uint32 *ptr_page_directory, struct Frame_Info *ptr_frame_
 void allocateMem(struct Env* e, uint32 virtual_address, uint32 size)
 {
 	// your code is here, remove the panic and write your code
-	//panic("allocateMem() is not implemented yet...!!");
 	int32 kern_phys_pgdir = rcr3() ;
 	uint32* pgd=e->env_pgdir;
 	lcr3(e->env_cr3) ;
@@ -716,6 +723,7 @@ void allocateMem(struct Env* e, uint32 virtual_address, uint32 size)
 		map_frame(pgd,frame,(uint32*)virtual_address,PERM_USER|PERM_WRITEABLE);
 		virtual_address+=PAGE_SIZE;
 	}
+
 	lcr3(kern_phys_pgdir) ;
 	tlbflush();
 	//This function should allocate ALL pages of the required size starting at virtual_address in the given environment

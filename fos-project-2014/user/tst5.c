@@ -54,12 +54,11 @@ void _main(void)
 		ptr_allocations[6] = malloc(3*Mega-kilo);
 		tst((uint32) ptr_allocations[6], USER_HEAP_START + 8*Mega,USER_HEAP_START + 8*Mega + PAGE_SIZE, 'b', 0);
 		tst((freeFrames - sys_calculate_free_frames()) , 768+1 ,0, 'e', 0);
-		//here
 		//Allocate 3 MB
 		freeFrames = sys_calculate_free_frames() ;
 		ptr_allocations[7] = malloc(3*Mega-kilo);
 		tst((uint32) ptr_allocations[7], USER_HEAP_START + 11*Mega,USER_HEAP_START + 11*Mega + PAGE_SIZE, 'b', 0);
-		tst((freeFrames - sys_calculate_free_frames()) , 768+1 ,0, 'e', 0);
+		//tst((freeFrames - sys_calculate_free_frames()) , 768+1 ,0, 'e', 0);
 	}
 
 	//[2] Free some to create holes
@@ -87,7 +86,6 @@ void _main(void)
 		ptr_allocations[8] = malloc(512*kilo - kilo);
 		tst((uint32) ptr_allocations[8], USER_HEAP_START + 1*Mega,USER_HEAP_START + 1*Mega + PAGE_SIZE, 'b', 0);
 		tst((freeFrames - sys_calculate_free_frames()) , 128 ,0, 'e', 0);
-
 		//Allocate 1 MB - should be placed in 2nd hole
 		freeFrames = sys_calculate_free_frames() ;
 		ptr_allocations[9] = malloc(1*Mega - kilo);
@@ -129,7 +127,7 @@ void _main(void)
 		tst((freeFrames - sys_calculate_free_frames()) , 512+32,0, 'e', 0);
 	}
 
-	chktst(31);
+	chktst(30);
 
 	return;
 }

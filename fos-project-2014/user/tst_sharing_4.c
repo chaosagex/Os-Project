@@ -38,22 +38,24 @@ _main(void)
 	}
 	cprintf("Step B completed successfully!!\n\n\n");
 
-	cprintf("STEP C: checking free loop ranges ... \n");
+	cprintf("STEP C: checking range of loop during free... \n");
 	{
 		uint32 *w, *u;
 		int freeFrames = sys_calculate_free_frames() ;
 		int ret = sys_createSharedObject("w", 3 * PAGE_SIZE+1, 1, (void*)&w);
 		ret = sys_createSharedObject("u", PAGE_SIZE, 1, (void*)&u);
-		//if ((freeFrames - sys_calculate_free_frames()) !=  6) panic("Wrong allocation: make sure that you share the required space in both user environment and kernel");
+		if ((freeFrames - sys_calculate_free_frames()) != 5+1+2) panic("Wrong allocation: make sure that you allocate the required space in the user environment and add its frames to frames_storage");
 		sys_freeSharedObject("w");
 		if ((freeFrames - sys_calculate_free_frames()) !=  1+1+1) panic("Wrong free: check your logic");
 
-//		uint32 *o;
-//		int freeFrames = sys_calculate_free_frames() ;
-//		int ret = sys_createSharedObject("o", 2 * PAGE_SIZE-1, (void*)&o);
-//
-//		sys_freeSharedObject("o");
-//		if ((freeFrames - sys_calculate_free_frames()) !=  3) panic("Wrong free: check your logic");
+		uint32 *o;
+		//freeFrames = sys_calculate_free_frames() ;
+		ret = sys_createSharedObject("o", 2 * PAGE_SIZE-1,1, (void*)&o);
+		if ((freeFrames - sys_calculate_free_frames()) != 3+1+2) panic("Wrong allocation: make sure that you allocate the required space in the user environment and add its frames to frames_storage");
+		sys_freeSharedObject("o");
+		if ((freeFrames - sys_calculate_free_frames()) !=  1+1+1) panic("Wrong free: check your logic");
+		sys_freeSharedObject("u");
+		if ((freeFrames - sys_calculate_free_frames()) !=  0) panic("Wrong free: check your logic");
 	}
 	cprintf("Step C completed successfully!!\n\n\n");
 

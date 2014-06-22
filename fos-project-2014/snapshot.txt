@@ -1,25 +1,25 @@
-
-
-Physical memory: 32768K available, base = 640K, extended = 31744K
-Max Envs = 84
-check_boot_pgdir() succeeded!
-
-Welcome to the FOS kernel command prompt!
-Type 'help' for a list of commands.
-FOS> run tst1
-
-Environment Id= 4096
-
-Congratulations... test runs successfully
-FOS> run tst5
-
-Environment Id= 4097
-
-Congratulations... test runs successfully
-FOS> run tst2
-
-Environment Id= 4098
-84
+line 5
+line 1
+line 2
+line 3
+line 4
+line 5
+line 1
+line 2
+line 3
+line 4
+line 5
+line 1
+line 2
+line 3
+line 4
+line 5
+line 1
+line 2
+line 3
+line 4
+line 5
+line 1
 illegal memory access at address = 0
 kernel panic at kern/trap.c:456: ILLEGAL MEMORY ACCESS!!!
 FOS>

@@ -14,7 +14,7 @@ _main(void)
 	cprintf("Slave env removed x\n");
 
 	int diff = (sys_calculate_free_frames() - freeFrames);
-	cprintf("DIff = %d\n",diff);
+	//cprintf("DIff = %d\n",diff);
 	if (diff !=  1) panic("wrong free: frames removed not equal 1 !, correct frames to be removed is 1:\nfrom the env: 1 table for x\nframes_storage: not cleared yet\n");
 	return;
 }

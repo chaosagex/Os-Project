@@ -25,7 +25,7 @@
 //	the allocateMem function is empty, make sure to implement it.
 uint32 used[HeapSize];
 int arr_count=1;
-int begining(int index,uint32 size)
+uint32 begining(int index,uint32 size)
 {
 	int i=index;
 	int count=0;
