@@ -385,7 +385,6 @@ int allocate_frame(struct Frame_Info **ptr_frame_info)
 				continue;
 			if(e->env_status == ENV_EXIT)
 			{
-				cprintf("freed\n");
 				env_free(e);
 				freed=1;
 				removed=1;

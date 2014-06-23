@@ -1,8 +1,21 @@
 Steps:
-1. Add the user program "tst_freeRAM_1.c" to your project
-2. Add it to the array of user program info
-3. Apply the following scenario
+1. Add the user programs to your project
+2. Add them to the array of user program info
+3. Apply the following scenarios
+
+Scenario1: freeing existed processes only
 	FOS> load fib
 	FOS> load fact
+	FOS> run fos_add
+	FOS> run tst_freeRAM_1  => it should run successfully
+	FOS> runall => BOTH "fib" & "fact" should run
 	
+Scenario2: freeing loaded processes only
+	FOS> load fib
+	FOS> load fact
+	FOS> run tst_freeRAM_1  => it should run successfully
+	FOS> runall => AT MOST ONE of "fib" or "fact" should run 
 	
+Scenario3: freeing exited & loaded processes 
+	FOS> run tst_freeRAM_2  => it should run successfully 
+	FOS> printall => No processes should be exist in either new or ready queue
